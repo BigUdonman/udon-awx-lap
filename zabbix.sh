@@ -2,7 +2,7 @@
 
 ZBX_CONF="/etc/zabbix/zabbix_agent2.conf"
 ZBX_SERVER_DOMAIN="udon04"
-ZBX_AGENT_SERVICE="zabbix-agent"
+ZBX_AGENT_SERVICE="zabbix-agent2"
 
 # 1. Zabbix 서버 IP 얻기
 ZBX_SERVER_IP=$(getent hosts "$ZBX_SERVER_DOMAIN" | awk '{ print $1 }')
