@@ -29,7 +29,7 @@ else
 fi
 
 # 3. Zabbix Agent 재시작
-systemctl restart "$ZBX_AGENT_SERVICE"
+sudo systemctl restart "$ZBX_AGENT_SERVICE"
 echo "🔁 Zabbix Agent 재시작 완료"
 
 exit 0
