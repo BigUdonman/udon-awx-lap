@@ -1,0 +1,7 @@
+---
+- name: Zabbix Agent conf IP configure
+  hosts: all
+  become: true
+  tasks:
+    - name: zabbix.sh excute
+      script: zabbix.sh
