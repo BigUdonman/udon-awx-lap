@@ -1,24 +1,32 @@
-- name: Setup Zabbix Agent2
+---
+- name: Setup Zabbix Agent2 on Ubuntu 22.04
   hosts: all
   become: true
   vars:
-    zabbix_server_domain: "udon04"
+    zabbix_release_deb_url: "https://repo.zabbix.com/zabbix/7.2/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.2+ubuntu22.04_all.deb"
+    zabbix_release_deb_filename: "/tmp/zabbix-release_latest_7.2+ubuntu22.04_all.deb"
     zabbix_conf_path: "/etc/zabbix/zabbix_agent2.conf"
     zabbix_service_name: "zabbix-agent2"
+    zabbix_server_domain: "udon04"
 
   tasks:
-    - name: Install Zabbix Agent2 (Ubuntu/Debian 기준)
+    - name: Download Zabbix release .deb file
+      get_url:
+        url: "{{ zabbix_release_deb_url }}"
+        dest: "{{ zabbix_release_deb_filename }}"
+
+    - name: Install Zabbix release package
+      apt:
+        deb: "{{ zabbix_release_deb_filename }}"
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Zabbix Agent2
       apt:
         name: zabbix-agent2
         state: present
-        update_cache: yes
-      when: ansible_facts['os_family'] == "Debian"
-
-    - name: Install Zabbix Agent2 (RHEL/CentOS 기준)
-      yum:
-        name: zabbix-agent2
-        state: present
-      when: ansible_facts['os_family'] == "RedHat"
 
     - name: Resolve Zabbix server domain to IP
       shell: "getent hosts {{ zabbix_server_domain }} | awk '{ print $1 }'"
@@ -44,7 +52,7 @@
         line: "ServerActive={{ zabbix_server_ip }}"
         create: yes
 
-    - name: Restart Zabbix Agent2
+    - name: Ensure Zabbix Agent2 is started and enabled
       systemd:
         name: "{{ zabbix_service_name }}"
         state: restarted
