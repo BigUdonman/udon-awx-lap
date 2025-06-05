@@ -52,7 +52,7 @@
         line: "ServerActive={{ zabbix_server_ip }}"
         create: yes
 
-    - name: Set Hostname in config (ex: Hostname=myserver01)
+    - name: "Set Hostname in config (ex: Hostname=myserver01)"
       lineinfile:
         path: "{{ zabbix_conf_path }}"
         regexp: '^Hostname='
