@@ -1,0 +1,51 @@
+- name: Setup Zabbix Agent2
+  hosts: all
+  become: true
+  vars:
+    zabbix_server_domain: "udon04"
+    zabbix_conf_path: "/etc/zabbix/zabbix_agent2.conf"
+    zabbix_service_name: "zabbix-agent2"
+
+  tasks:
+    - name: Install Zabbix Agent2 (Ubuntu/Debian 기준)
+      apt:
+        name: zabbix-agent2
+        state: present
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install Zabbix Agent2 (RHEL/CentOS 기준)
+      yum:
+        name: zabbix-agent2
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Resolve Zabbix server domain to IP
+      shell: "getent hosts {{ zabbix_server_domain }} | awk '{ print $1 }'"
+      register: zabbix_server_ip_result
+      changed_when: false
+      failed_when: zabbix_server_ip_result.stdout == ""
+
+    - name: Set fact for resolved Zabbix server IP
+      set_fact:
+        zabbix_server_ip: "{{ zabbix_server_ip_result.stdout }}"
+
+    - name: Update 'Server=' in config
+      lineinfile:
+        path: "{{ zabbix_conf_path }}"
+        regexp: '^Server='
+        line: "Server={{ zabbix_server_ip }}"
+        create: yes
+
+    - name: Update 'ServerActive=' in config
+      lineinfile:
+        path: "{{ zabbix_conf_path }}"
+        regexp: '^ServerActive='
+        line: "ServerActive={{ zabbix_server_ip }}"
+        create: yes
+
+    - name: Restart Zabbix Agent2
+      systemd:
+        name: "{{ zabbix_service_name }}"
+        state: restarted
+        enabled: yes
