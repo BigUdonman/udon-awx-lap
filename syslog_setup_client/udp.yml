@@ -6,9 +6,9 @@
     - name: Ensure rsyslog.conf contains syslog server IPs
       lineinfile:
         path: /etc/rsyslog.conf
-        regexp: '^(\*\.{1,2})'
         line: "{{ item }}"
         create: yes
+        insertafter: EOF  # 파일 끝에 추가
       with_items:
         - "*.* @172.29.139.4:514"    # syslog01 UDP (IP 1)
         - "*.* @172.29.128.90:514"   # syslog01 UDP (IP 2)
@@ -21,3 +21,4 @@
       systemd:
         name: rsyslog
         state: restarted
+
