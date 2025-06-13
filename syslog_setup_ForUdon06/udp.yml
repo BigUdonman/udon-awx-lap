@@ -1,0 +1,21 @@
+---
+- name: Configure rsyslog to send logs to four syslog servers (UDP)
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure rsyslog.conf contains syslog server IPs
+      lineinfile:
+        path: /etc/rsyslog.conf
+        line: "{{ item }}"
+        create: yes
+        insertafter: EOF  # 파일 끝에 추가
+      with_items:
+        - "*.* @172.24.225.137:514"    # syslog01 UDP (IP 1)
+        - "*.* @172.24.230.59:514"   # syslog02 UDP (IP 1)
+      notify: restart rsyslog
+
+  handlers:
+    - name: restart rsyslog
+      systemd:
+        name: rsyslog
+        state: restarted
