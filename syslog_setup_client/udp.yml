@@ -13,7 +13,7 @@
         - "*.* @172.29.139.4:514"    # syslog01 UDP (IP 1)
         - "*.* @172.29.128.90:514"   # syslog01 UDP (IP 2)
         - "*.* @172.29.137.217:514"  # syslog02 UDP (IP 1)
-        - "*.* @172.29.135.189:514"  # syslog02 UDP (IP 2)
+        - "*.* @172.29.135.189:514"  # syslog02 UDP (IP 2)-
       notify: restart rsyslog
 
   handlers:
